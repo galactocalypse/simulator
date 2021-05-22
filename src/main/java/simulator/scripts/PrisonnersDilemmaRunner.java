@@ -20,9 +20,12 @@ public class PrisonnersDilemmaRunner {
 		addPrisoner(prisoners, "prisoner-random", "RANDOM");
 		addPrisoner(prisoners, "prisoner-echo", "ECHO");
 		addPrisoner(prisoners, "prisoner-titfortat", "TIT_FOR_TAT");
+		addPrisoner(prisoners, "prisoner-titfor2tats", "TIT_FOR_TWO_TATS");
+		addPrisoner(prisoners, "prisoner-titfor3tats", "TIT_FOR_THREE_TATS");
+		addPrisoner(prisoners, "prisoner-grudger", "GRUDGER");
 
-		Universe<PrisonerEntity, PrisonerInteractionResponse> universe = new PrisonersDilemmaUniverse(new Date(), 20,
-				prisoners, 50);
+		Universe<PrisonerEntity, PrisonerInteractionResponse> universe = new PrisonersDilemmaUniverse(new Date(), 200,
+				prisoners, 0);
 
 		universe.run();
 	}

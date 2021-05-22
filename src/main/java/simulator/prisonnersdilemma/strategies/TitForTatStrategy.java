@@ -6,13 +6,16 @@ import java.util.Map;
 import simulator.core.EntityId;
 import simulator.prisonersdilemma.PrisonerEntity;
 import simulator.prisonersdilemma.PrisonerInteractionResponse;
-import simulator.prisonersdilemma.PrisonerStrategy;
 import simulator.prisonersdilemma.PrisonerInteractionResponse.PrisonerActionEnum;
 
-public class TitForTatStrategy implements PrisonerStrategy {
+public class TitForTatStrategy extends TitForNTatsStrategy {
 
 	public static final String NAME = "TIT_FOR_TAT";
 	private final Map<EntityId, PrisonerActionEnum> lastResponse = new HashMap<>();
+
+	public TitForTatStrategy() {
+		super(1);
+	}
 
 	@Override
 	public String getName() {
@@ -26,7 +29,7 @@ public class TitForTatStrategy implements PrisonerStrategy {
 
 	@Override
 	public PrisonerInteractionResponse generateResponse(PrisonerEntity entity) {
-		
+
 		PrisonerActionEnum action = lastResponse.get(entity.extractId());
 		if (action == null) {
 			action = PrisonerActionEnum.COOPERATE;
