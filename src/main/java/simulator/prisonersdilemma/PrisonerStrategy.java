@@ -1,8 +1,6 @@
 package simulator.prisonersdilemma;
 
-
 public interface PrisonerStrategy {
-	
 
 	String getName();
 

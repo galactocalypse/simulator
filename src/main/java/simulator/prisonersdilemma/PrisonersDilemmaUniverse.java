@@ -10,14 +10,13 @@ import simulator.core.EntityId;
 import simulator.core.Universe;
 import simulator.prisonersdilemma.PrisonerInteractionResponse.PrisonerActionEnum;
 
-public class PrisonersDilemmaUniverse extends Universe<PrisonerEntity, PrisonerInteractionResponse> {
+public class PrisonersDilemmaUniverse extends Universe {
 
 	private final Map<String, Integer> strategyScore = new HashMap<>();
 	private final Map<String, Integer> pairScore = new HashMap<>();
 
-	public PrisonersDilemmaUniverse(Date currentTime, long maxIterations, Map<EntityId, PrisonerEntity> entities,
-			long sleepMillis) {
-		super(currentTime, maxIterations, entities, sleepMillis);
+	public PrisonersDilemmaUniverse(Date currentTime, long maxIterations, long sleepMillis) {
+		super(currentTime, maxIterations, sleepMillis);
 	}
 
 	@Override
@@ -30,15 +29,18 @@ public class PrisonersDilemmaUniverse extends Universe<PrisonerEntity, PrisonerI
 		for (int i = 0; i < size; i++) {
 			for (int j = i + 1; j < size; j++) {
 
-				simulateInteraction(entities.get(entityIds.get(i)), entities.get(entityIds.get(j)));
+				simulateInteraction(entityIds.get(i), entityIds.get(j));
 			}
 		}
 	}
 
-	private void simulateInteraction(PrisonerEntity first, PrisonerEntity second) {
+	private void simulateInteraction(EntityId firstEntityId, EntityId secondEntityId) {
 
-		PrisonerInteractionResponse firstResponse = first.interact(second);
-		PrisonerInteractionResponse secondResponse = second.interact(first);
+		PrisonerEntity first = (PrisonerEntity) entities.get(firstEntityId);
+		PrisonerEntity second = (PrisonerEntity) entities.get(secondEntityId);
+
+		PrisonerInteractionResponse firstResponse = (PrisonerInteractionResponse) first.interact(second);
+		PrisonerInteractionResponse secondResponse = (PrisonerInteractionResponse) second.interact(first);
 
 		evaluate(first, firstResponse, second, secondResponse);
 
@@ -93,7 +95,7 @@ public class PrisonersDilemmaUniverse extends Universe<PrisonerEntity, PrisonerI
 	}
 
 	@Override
-	protected void endIteration() {
+	protected void endIterationInternal() {
 
 		System.out.println(String.format("Ending iteration %s", getCurrentIteration()));
 		strategyScore.forEach((strategyName, score) -> {
@@ -107,7 +109,6 @@ public class PrisonersDilemmaUniverse extends Universe<PrisonerEntity, PrisonerI
 
 			System.out.println(String.format("\t%s: %s", strategyPair, score));
 		});
-
 	}
 
 }

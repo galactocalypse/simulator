@@ -1,39 +1,40 @@
 package simulator.prisonersdilemma;
 
-import java.util.concurrent.TimeUnit;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import simulator.core.Entity;
-import simulator.core.EntityId;
+import simulator.core.AbstractEntity;
+import simulator.core.AbstractInteractionResponse;
+import simulator.core.Universe.TimeElapse;
 
+public class PrisonerEntity extends AbstractEntity {
 
-@AllArgsConstructor
-public class PrisonerEntity implements Entity<PrisonerEntity, PrisonerInteractionResponse> {
-
-	private final EntityId id;
+	private final PrisonerId id;
 
 	@Getter
 	private final PrisonerStrategy strategy;
-	
-	@Override
-	public void elapseTime(TimeUnit unit, int value) {
-		// no impact of time		
+
+	public PrisonerEntity(PrisonerId id, PrisonerStrategy strategy) {
+		this.id = id;
+		this.strategy = strategy;
 	}
 
 	@Override
-	public PrisonerInteractionResponse interact(PrisonerEntity entity) {
-		return strategy.generateResponse(entity);
+	public void elapseTime(TimeElapse timeElapse) {
+		// no impact of time
 	}
 
 	@Override
-	public EntityId extractId() {
+	public PrisonerId extractId() {
 		return id;
 	}
 
 	@Override
-	public void receiveResponse(PrisonerEntity entity, PrisonerInteractionResponse receivedResponse) {
-		strategy.seedResponse(entity, receivedResponse);
+	public AbstractInteractionResponse interact(AbstractEntity entity) {
+		return strategy.generateResponse((PrisonerEntity) entity);
+	}
+
+	@Override
+	public void receiveResponse(AbstractEntity entity, AbstractInteractionResponse receivedResponse) {
+		strategy.seedResponse((PrisonerEntity) entity, (PrisonerInteractionResponse) receivedResponse);
 	}
 
 }

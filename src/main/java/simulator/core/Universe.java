@@ -1,35 +1,51 @@
 package simulator.core;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import simulator.utils.DateUtils;
+import simulator.utils.ThreadUtils;
 
-public abstract class Universe<T extends Entity<T, U>, U extends Response<U>> implements Runnable {
+public abstract class Universe implements Runnable {
 
 	private static final TimeUnit TIME_UNIT = TimeUnit.DAYS;
 
 	@Getter
 	protected Date currentTime;
 	protected long maxIterations;
-	protected Map<EntityId, T> entities;
 	private long sleepMillis;
-	
+
+	protected final Map<EntityId, AbstractEntity> entities = new HashMap<>();
+	private final List<Consumer<TimeElapse>> timeElapseListeners = new ArrayList<>();
+
 	@Getter(AccessLevel.PROTECTED)
 	private long currentIteration = 1;
 
-	protected Universe(Date currentTime, long maxIterations, Map<EntityId, T> entities) {
-		this(currentTime, maxIterations, entities, DateUtils.MILLIS_PER_SECOND);
+	protected Universe(Date currentTime, long maxIterations) {
+		this(currentTime, maxIterations, DateUtils.MILLIS_PER_SECOND);
 	}
 
-	protected Universe(Date currentTime, long maxIterations, Map<EntityId, T> entities, long sleepMillis) {
+	protected Universe(Date currentTime, long maxIterations, long sleepMillis) {
 		this.currentTime = currentTime;
 		this.maxIterations = maxIterations;
-		this.entities = entities;
 		this.sleepMillis = sleepMillis;
+	}
+
+	public <T extends AbstractEntity> void addEntity(T entity) {
+		entities.put(entity.extractId(), entity);
+		registerTimeElapseListener(entity::elapseTime);
+	}
+
+	public void registerTimeElapseListener(Consumer<TimeElapse> listener) {
+		timeElapseListeners.add(listener);
 	}
 
 	@Override
@@ -37,40 +53,43 @@ public abstract class Universe<T extends Entity<T, U>, U extends Response<U>> im
 
 		while (true) {
 
-			try {
-
-				if (currentIteration > maxIterations) {
-					System.out.println("Max iterations reached; exiting...");
-					break;
-				}
-
-				System.out.println(String.format("Starting iteration %s...", currentIteration));
-				
-				addEntropy();
-				endIteration();
-				elapseTime();
-			
-				Thread.sleep(sleepMillis);
-
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
+			if (currentIteration > maxIterations) {
+				System.out.println("Max iterations reached; exiting...");
+				break;
 			}
+
+			addEntropy();
+			endIteration();
 		}
 	}
 
 	// simulate interactions between entities
 	protected abstract void addEntropy();
 
-	protected abstract void endIteration();
+	private void endIteration() {
+		endIterationInternal();
+		elapseTime();
+	}
+
+	protected abstract void endIterationInternal();
 
 	private void elapseTime() {
 
-		currentIteration ++;
+		currentIteration++;
 		currentTime = DateUtils.add(currentTime, TIME_UNIT, 1);
-		
-		entities.forEach((entityId, entity) -> {
-			entity.elapseTime(TIME_UNIT, 1);
-		});
+
+		timeElapseListeners.forEach((listener) -> listener.accept(TimeElapse.from(TIME_UNIT, 1)));
+
+		ThreadUtils.sleepMillis(sleepMillis);
 	}
-	
+
+	@Getter
+	@AllArgsConstructor(staticName = "from")
+	public static class TimeElapse {
+
+		private TimeUnit timeUnit;
+		private long value;
+
+	}
+
 }
