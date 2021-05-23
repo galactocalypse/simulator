@@ -1,11 +1,11 @@
 package simulator.prisonersdilemma;
 
 import lombok.Getter;
-import simulator.core.AbstractEntity;
-import simulator.core.AbstractInteractionResponse;
+import simulator.core.Entity;
+import simulator.core.InteractionResponse;
 import simulator.core.Universe.TimeElapse;
 
-public class PrisonerEntity extends AbstractEntity {
+public class PrisonerEntity extends Entity {
 
 	private final PrisonerId id;
 
@@ -28,12 +28,12 @@ public class PrisonerEntity extends AbstractEntity {
 	}
 
 	@Override
-	public AbstractInteractionResponse interact(AbstractEntity entity) {
+	public InteractionResponse interact(Entity entity) {
 		return strategy.generateResponse((PrisonerEntity) entity);
 	}
 
 	@Override
-	public void receiveResponse(AbstractEntity entity, AbstractInteractionResponse receivedResponse) {
+	public void receiveResponse(Entity entity, InteractionResponse receivedResponse) {
 		strategy.seedResponse((PrisonerEntity) entity, (PrisonerInteractionResponse) receivedResponse);
 	}
 

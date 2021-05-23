@@ -23,7 +23,7 @@ public abstract class Universe implements Runnable {
 	protected long maxIterations;
 	private long sleepMillis;
 
-	protected final Map<EntityId, AbstractEntity> entities = new HashMap<>();
+	protected final Map<EntityId, Entity> entities = new HashMap<>();
 	private final List<Consumer<TimeElapse>> timeElapseListeners = new ArrayList<>();
 
 	@Getter(AccessLevel.PROTECTED)
@@ -39,7 +39,7 @@ public abstract class Universe implements Runnable {
 		this.sleepMillis = sleepMillis;
 	}
 
-	public <T extends AbstractEntity> void addEntity(T entity) {
+	public <T extends Entity> void addEntity(T entity) {
 		entities.put(entity.extractId(), entity);
 		registerTimeElapseListener(entity::elapseTime);
 	}
