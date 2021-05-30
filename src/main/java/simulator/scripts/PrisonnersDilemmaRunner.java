@@ -13,14 +13,16 @@ public class PrisonnersDilemmaRunner {
 
 	public static void main(String[] args) {
 
-		Universe universe = new PrisonersDilemmaUniverse(new Date(), 200, 0);
+		Universe universe = new PrisonersDilemmaUniverse(new Date(), 20, 0);
 
-		universe.addEntity(prisoner("prisoner-random", "RANDOM"));
-		universe.addEntity(prisoner("prisoner-echo", "ECHO"));
-		universe.addEntity(prisoner("prisoner-titfortat", "TIT_FOR_TAT"));
-		universe.addEntity(prisoner("prisoner-titfor2tats", "TIT_FOR_TWO_TATS"));
-		universe.addEntity(prisoner("prisoner-titfor3tats", "TIT_FOR_THREE_TATS"));
-		universe.addEntity(prisoner("prisoner-grudger", "GRUDGER"));
+		for (int i = 1; i <= 10; i++) {
+			universe.addEntity(prisoner("prisoner-random-" + i, "RANDOM"));
+			universe.addEntity(prisoner("prisoner-echo-" + i, "ECHO"));
+			universe.addEntity(prisoner("prisoner-titfortat-" + i, "TIT_FOR_TAT"));
+			universe.addEntity(prisoner("prisoner-titfor2tats-" + i, "TIT_FOR_TWO_TATS"));
+			universe.addEntity(prisoner("prisoner-titfor3tats-" + i, "TIT_FOR_THREE_TATS"));
+			universe.addEntity(prisoner("prisoner-grudger-" + i, "GRUDGER"));
+		}
 
 		universe.run();
 	}
